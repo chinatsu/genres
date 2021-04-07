@@ -5,6 +5,21 @@ A script that collects listening history for a given [last.fm](https://last.fm) 
 I use [poetry](https://python-poetry.org/) for package management, and I recommended installing this to avoid dealing with virtualenvs on your own.
 
 
+## Setup
+
+You will need an API application on both [last.fm](https://www.last.fm/api) and [Spotify](https://developer.spotify.com/dashboard/applications).
+The application reads (and expects) these environment variables:
+
+|Name|Value|
+|--|--|
+| SPOTIPY_CLIENT_ID | The Client ID of your Spotify API application |
+| SPOTIPY_CLIENT_SECRET | The Client Secret of your Spotify API application |
+| SPOTIPY_REDIRECT_URI | A redirect URI that has been registered with your Spotify API application |
+| LAST_FM_KEY | The API key from your [Last.fm API application](https://www.last.fm/api/accounts) |
+| LAST_FM_SECRET | The API secret from your Last.fm API application |
+
+
+
 ## Usage
 
 ```
