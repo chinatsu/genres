@@ -24,7 +24,7 @@ def get_artists(user, args):
     print()
     if len(artists) == 0:
         raise Exception(
-            f"No scrobbles have been registered between {parsed_from} and {parsed_to}"
+            f"No scrobbles have been registered between {args.formatted['from']} and {args.formatted['to']}"
         )
     print("Processed artists")
 

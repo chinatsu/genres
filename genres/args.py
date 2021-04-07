@@ -15,7 +15,7 @@ class Args:
             else int((datetime.now() - timedelta(days=self.args.days)).timestamp())
         )
         self.time_to = (
-            int(datetime.strptime(self.args.start, "%Y-%m-%d").timestamp())
+            int(datetime.strptime(self.args.end, "%Y-%m-%d").timestamp())
             if self.args.end
             else int(datetime.now().timestamp())
         )

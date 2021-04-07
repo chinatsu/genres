@@ -19,7 +19,6 @@ The application reads (and expects) these environment variables:
 | LAST_FM_SECRET | The API secret from your Last.fm API application |
 
 
-
 ## Usage
 
 ```
