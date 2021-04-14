@@ -26,9 +26,11 @@ def get_artists(user, args):
         raise Exception(
             f"No scrobbles have been registered between {args.formatted['from']} and {args.formatted['to']}"
         )
-    print("Processed artists")
 
-    return Counter(artists)
+    counter = Counter(artists)
+    print(f"Received {len(counter)} unique artists")
+
+    return counter
 
 
 def get_genres(artists, args):
@@ -42,17 +44,21 @@ def get_genres(artists, args):
         ]
         if len(results) > 0:
             genres += results[0]["genres"] * artists[artist]
-    print("Processed genres")
+
+    counter = Counter(genres)
+    print()
+    print(f"Received {len(counter)} unique genres")
+
     if args.reverse:
         return [
             item
-            for items, c in Counter(genres).most_common()[: args.top]
+            for items, c in counter.most_common()[: args.top]
             for item in [items] * c
         ]
     else:
         return [
             item
-            for items, c in Counter(genres).most_common()[: args.top - 1 : -1]
+            for items, c in counter.most_common()[: args.top - 1 : -1]
             for item in [items] * c
         ]
 
