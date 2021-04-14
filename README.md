@@ -18,6 +18,11 @@ The application reads (and expects) these environment variables:
 | LAST_FM_KEY | The API key from your [Last.fm API application](https://www.last.fm/api/accounts) |
 | LAST_FM_SECRET | The API secret from your Last.fm API application |
 
+Once you have all this set, you can run 
+```
+poetry install
+```
+within this directory, and you should be all set up!
 
 ## Usage
 
