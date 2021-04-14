@@ -1,6 +1,7 @@
 from collections import Counter
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
+from datetime import datetime
 
 try:
     import secret  # this is where i initialize env variables 'cause i'm lazy & on windows
@@ -11,31 +12,39 @@ import chart
 import lastfm
 
 
-def get_artists(user, args):
+def get_scrobbles(user, args):
     scrobbles = user.get_recent_tracks(
         limit=None, time_from=args.time_from, time_to=args.time_to, stream=True
     )
 
+    details = []
     artists = []
     for idx, scrobble in enumerate(scrobbles):
         if idx % 100 == 0 and idx != 0:
-            print(f"Processing track number: {idx}         \r", end="")
-        artists.append(scrobble.track.artist.name)
+            print(f"Processing scrobble number: {idx}         \r", end="")
+        artist = scrobble.track.artist.name
+        artists.append(artist)
+        details.append(
+            {
+                "artist": artist,
+                "date": datetime.fromtimestamp(int(scrobble.timestamp)),
+                "genres": [],
+            }
+        )
     print()
     if len(artists) == 0:
         raise Exception(
             f"No scrobbles have been registered between {args.formatted['from']} and {args.formatted['to']}"
         )
 
-    counter = Counter(artists)
-    print(f"Received {len(counter)} unique artists")
+    print(f"Processed {len(details)} scrobbles")
 
-    return counter
+    return set(artists), details
 
 
 def get_genres(artists, args):
     spotify = Spotify(auth_manager=SpotifyOAuth())
-    genres = []
+    genres = {}
     for idx, artist in enumerate(artists):
         if idx % 100 == 0 and idx != 0:
             print(f"Processing artist number: {idx}         \r", end="")
@@ -43,24 +52,21 @@ def get_genres(artists, args):
             "items"
         ]
         if len(results) > 0:
-            genres += results[0]["genres"] * artists[artist]
+            genres[artist] = results[0]["genres"]
 
-    counter = Counter(genres)
     print()
-    print(f"Received {len(counter)} unique genres")
+    print(f"Received genres for {len(genres)} artists")
 
-    if args.reverse:
-        return [
-            item
-            for items, c in counter.most_common()[: args.top]
-            for item in [items] * c
-        ]
-    else:
-        return [
-            item
-            for items, c in counter.most_common()[: args.top - 1 : -1]
-            for item in [items] * c
-        ]
+    return genres
+
+
+def produce_history(scrobbles, genres):
+    history = []
+    for scrobble in scrobbles:
+        if scrobble["artist"] in genres:
+            for genre in genres[scrobble["artist"]]:
+                history.append({"genre": genre, "date": scrobble["date"]})
+    return list(reversed(history))
 
 
 def main():
@@ -69,9 +75,10 @@ def main():
     lfm = lastfm.init()
     user = lfm.get_user(args.user)
 
-    artists = get_artists(user, args)
+    artists, scrobbles = get_scrobbles(user, args)
     genres = get_genres(artists, args)
-    chart.save(args, genres)
+    history = produce_history(scrobbles, genres)
+    chart.save(args, history, genres)
 
 
 if __name__ == "__main__":

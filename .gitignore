@@ -40,4 +40,5 @@ pip-wheel-metadata
 /poetry.toml
 
 charts/*.png
+charts/*.html
 genres/secret.py
