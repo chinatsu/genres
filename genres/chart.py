@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 
 def save(args, genres):
+    print()
+    print(f"Generating genre chart (top {args.top}) weighted by scrobble amount")
     sns.set_theme(style="whitegrid")
     fig = sns.catplot(
         data=pd.DataFrame({"genre": genres}),

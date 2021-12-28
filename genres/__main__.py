@@ -16,10 +16,11 @@ def get_artists(user, args):
         limit=None, time_from=args.time_from, time_to=args.time_to, stream=True
     )
 
+    print(f"Getting scrobbled artists for {user} in the period {args.formatted['from']} to {args.formatted['to']}")
+
     artists = []
     for idx, scrobble in enumerate(scrobbles):
-        if idx % 100 == 0 and idx != 0:
-            print(f"Processing track number: {idx}         \r", end="")
+        print(f"Processing scrobble number: {idx+1:<7}\r", end="")
         artists.append(scrobble.track.artist.name)
     print()
     if len(artists) == 0:
@@ -28,7 +29,7 @@ def get_artists(user, args):
         )
 
     counter = Counter(artists)
-    print(f"Received {len(counter)} unique artists")
+    print(f"Received {len(counter)} unique artists over {len(artists)} scrobbles")
 
     return counter
 
@@ -36,14 +37,16 @@ def get_artists(user, args):
 def get_genres(artists, args):
     spotify = Spotify(auth_manager=SpotifyOAuth())
     genres = []
+    print()
+    print(f"Getting Spotify genres for {len(artists)} artists")
     for idx, artist in enumerate(artists):
-        if idx % 100 == 0 and idx != 0:
-            print(f"Processing artist number: {idx}         \r", end="")
-        results = spotify.search(q=f"artist:{artist}", type="artist")["artists"][
+        print(f"Processing artist number: {idx+1:<7}\r", end="")
+        results = spotify.search(q=f'"{artist}"', type="artist")["artists"][
             "items"
         ]
         if len(results) > 0:
-            genres += results[0]["genres"] * artists[artist]
+            if results[0]["name"] == artist:
+                genres += results[0]["genres"] * artists[artist]
 
     counter = Counter(genres)
     print()
